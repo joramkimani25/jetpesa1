@@ -52,15 +52,16 @@ const MIME = {
 
 // ─── Game Config ──────────────────────────────────────────────────────────────
 // ─── Cryptographic crash point generator ─────────────────────────────────────
-// Weighted: ~10% low (1.01-10x), ~55% mid (20-60x), ~25% high (60-150x), ~10% moon (150-550x)
+// Weighted: ~15% instant (1.01-2x), ~40% sweet (2-20x), ~25% mid (20-60x), ~12% high (60-150x), ~8% moon (150-550x)
 function generateCrashPoint() {
   const rand = crypto.randomBytes(4).readUInt32BE() / 0xFFFFFFFF;
   const fine = crypto.randomBytes(4).readUInt32BE() / 0xFFFFFFFF;
   let value;
-  if (rand < 0.10)      value = 1.01 + fine * 8.99;    // low
-  else if (rand < 0.65)  value = 20 + fine * 40;        // mid
-  else if (rand < 0.90)  value = 60 + fine * 90;        // high
-  else                   value = 150 + fine * 400;      // moon
+  if (rand < 0.15)       value = 1.01 + fine * 0.99;    // instant crash 1.01-2.0x
+  else if (rand < 0.55)  value = 2.0  + fine * 18.0;    // sweet spot   2.0-20.0x
+  else if (rand < 0.80)  value = 20   + fine * 40;      // mid          20-60x
+  else if (rand < 0.92)  value = 60   + fine * 90;      // high         60-150x
+  else                   value = 150  + fine * 400;      // moon         150-550x
   return parseFloat(value.toFixed(2));
 }
 
@@ -145,7 +146,6 @@ let domainSettings = {
   enabledGameKeys: ['aviator'],
   enabled_game_keys: ['aviator'],
   min_crash_point: 15,
-  max_crash_point: 50,
   instant_crash_pct: 33,
   platform_fee_balance: 0,
   is_active: true,
@@ -403,7 +403,6 @@ function gameStatePayload() {
     predeterminedTarget: game.crashPoint,
     betCount: 0,
     algorithmKey: ALGORITHM,
-    maxCrashPoint: domainSettings.max_crash_point,
   };
 }
 
