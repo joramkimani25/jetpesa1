@@ -52,17 +52,16 @@ const MIME = {
 
 // ─── Game Config ──────────────────────────────────────────────────────────────
 // ─── Cryptographic crash point generator ─────────────────────────────────────
-// Weighted: ~15% instant (1.01-2x), ~40% sweet (2-20x), ~25% mid (20-60x), ~12% high (60-150x), ~8% moon (150-550x)
+// Weighted: ~25% instant (1.01-2x), ~25% low-mid (2-20x), ~30% mid (20-40x), ~20% high (40-60x) | MAX 60x
 function generateCrashPoint() {
   const rand = crypto.randomBytes(4).readUInt32BE() / 0xFFFFFFFF;
   const fine = crypto.randomBytes(4).readUInt32BE() / 0xFFFFFFFF;
   let value;
-  if (rand < 0.15)       value = 1.01 + fine * 0.99;    // instant crash 1.01-2.0x
-  else if (rand < 0.55)  value = 2.0  + fine * 18.0;    // sweet spot   2.0-20.0x
-  else if (rand < 0.80)  value = 20   + fine * 40;      // mid          20-60x
-  else if (rand < 0.92)  value = 60   + fine * 90;      // high         60-150x
-  else                   value = 150  + fine * 400;      // moon         150-550x
-  return parseFloat(value.toFixed(2));
+  if (rand < 0.25)       value = 1.01 + fine * 0.99;    // instant crash 1.01-2.0x
+  else if (rand < 0.50)  value = 2.0  + fine * 18.0;    // low-mid      2.0-20.0x
+  else if (rand < 0.80)  value = 20   + fine * 20;      // mid          20-40x
+  else                   value = 40   + fine * 20;      // high         40-60x
+  return parseFloat(Math.min(60, value).toFixed(2));
 }
 
 // ─── Pre-generated crash queue (signal page reads from this) ─────────────────
