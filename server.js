@@ -693,8 +693,7 @@ h1{font-size:26px;font-weight:700;color:#fff;margin-bottom:24px}
   if (pathname === '/api/game/bet' && req.method === 'POST') {
     readBody(req, body => {
       const user   = getUser(req);
-      const amount = Math.min(60, Math.max(10, parseFloat(body.amount) || 10));
-      if (amount > 60) { json(res, { success: false, message: 'Maximum bet is 60 KES.' }, 400); return; }
+      const amount = Math.max(10, parseFloat(body.amount) || 10);
       if (user) {
         if (user.balance < amount) { json(res, { success: false, message: 'Insufficient balance. Please deposit first.' }, 400); return; }
         user.balance = Math.max(0, user.balance - amount);
